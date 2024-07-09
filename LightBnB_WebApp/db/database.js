@@ -185,6 +185,7 @@ const addProperty = function(property) {
     )
     .then ((result) => {
       console.log('Successfully inserted property');
+      return result.rows[0];
     })
     .catch((err) => {
       console.log(err.message);
