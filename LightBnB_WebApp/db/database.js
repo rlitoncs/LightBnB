@@ -98,7 +98,7 @@ const getAllReservations = function (guest_id, limit = 10) {
         WHERE reservations.guest_id = $1
         GROUP BY reservations.id, properties.id
         ORDER BY start_date
-        LIMIT 10;`, [guest_id]
+        LIMIT $2;`, [guest_id, limit]
     )
     .then((result) => {
       let userReservations = result.rows;
