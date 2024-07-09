@@ -117,18 +117,71 @@ const getAllReservations = function (guest_id, limit = 10) {
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
-const getAllProperties = (options, limit = 10) => {
+const getAllProperties = function (options, limit = 10) {
+  console.log(options);
+
+  // 1
+  const queryParams = [];
+  // 2
+  let queryString = `
+  SELECT properties.*, avg(property_reviews.rating) as average_rating
+  FROM properties
+  JOIN property_reviews ON properties.id = property_id
+  `;
+
+  // City Query
+  if (options.city) {
+    queryParams.push(`%${options.city}%`);
+    queryString += `WHERE city LIKE $${queryParams.length} `;
+  }
+
+  //Minimum Price Query
+  if (options.minimum_price_per_night){
+    queryParams.push(`${options.minimum_price_per_night}`);
+    queryString += `AND cost_per_night >= $${queryParams.length}`;
+  }
+
+  //Maximum Price Query
+  if (options.maximum_price_per_night){
+    queryParams.push(`${options.maximum_price_per_night}`);
+    queryString += `AND cost_per_night <= $${queryParams.length}`;
+  }
+
+  //Minimum Rating Query
+  if (options.minimum_rating){
+    queryParams.push(`${options.minimum_rating}`);
+    queryString += 
+    `GROUP BY properties.id
+     HAVING avg(property_reviews.rating) >= $${queryParams.length}`;
+
+     //Limit
+     queryParams.push(limit);
+     queryString += `
+     LIMIT $${queryParams.length};
+     `;
+  } else {
+    queryParams.push(limit);
+    queryString += `
+    GROUP BY properties.id
+    ORDER BY cost_per_night
+    LIMIT $${queryParams.length};
+    `;
+  }
+
+  //Output the full query, and the query parameters
+  console.log(queryString, queryParams);
+
+  // Return result as a promise
   return pool
-    .query(`SELECT * FROM properties LIMIT $1`, [limit])
-    .then((result) => {
-      return result.rows;
-      // console.log(result.rows);
+    .query(queryString, queryParams)
+    .then((res) => {
+      // console.log(res.rows)
+      return res.rows;
     })
     .catch((err) => {
-      console.log(err.message);
-    });
+      console.log(err);
+    })
 };
-
 
 /**
  * Add a property to the database
