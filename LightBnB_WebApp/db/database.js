@@ -129,10 +129,14 @@ const getAllProperties = function (options, limit = 10) {
   JOIN property_reviews ON properties.id = property_id
   `;
 
+  // 1-to-1 
+
   // City Query
   if (options.city) {
     queryParams.push(`%${options.city}%`);
     queryString += `WHERE city LIKE $${queryParams.length} `;
+  } else {
+    queryString += `WHERE 1=1`;
   }
 
   // Owner id Query
@@ -153,27 +157,14 @@ const getAllProperties = function (options, limit = 10) {
     queryString += `AND cost_per_night <= $${queryParams.length}`;
   }
 
-  //Minimum Rating Query
-  if (options.minimum_rating){
-    queryParams.push(`${options.minimum_rating}`);
-    queryString += 
-    `GROUP BY properties.id
-     HAVING avg(property_reviews.rating) >= $${queryParams.length}`;
-    
-    queryParams.push(limit);
-    queryString += `
-    ORDER BY cost_per_night
-    LIMIT $${queryParams.length};
-    `;
-  } else {
-    queryParams.push(limit);
-    queryString += `
-    GROUP BY properties.id
-    ORDER BY cost_per_night
-    LIMIT $${queryParams.length};
-    `;
-  }
-  
+
+  queryParams.push(limit);
+  queryString += `
+  GROUP BY properties.id
+  ORDER BY cost_per_night
+  LIMIT $${queryParams.length};
+  `;
+
   //Output the full query, and the query parameters
   console.log(queryString, queryParams);
 
@@ -185,7 +176,7 @@ const getAllProperties = function (options, limit = 10) {
       return res.rows;
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err.message);
     })
 };
 
