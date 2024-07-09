@@ -157,6 +157,11 @@ const getAllProperties = function (options, limit = 10) {
     queryString += `AND cost_per_night <= $${queryParams.length}`;
   }
 
+  // Minimum Average Rating for Properties
+  if (options.minimum_rating) {
+    queryParams.push(options.minimum_rating);
+    queryString += `HAVING avg(rating) >= $${queryParams.length}`;
+  }
 
   queryParams.push(limit);
   queryString += `
@@ -164,6 +169,7 @@ const getAllProperties = function (options, limit = 10) {
   ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
+  
 
   //Output the full query, and the query parameters
   console.log(queryString, queryParams);
