@@ -20,18 +20,17 @@ const pool = new Pool({
  * @param {String} email The email of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithEmail = function (email) {
+const getUserWithEmail = function(email) {
   return pool
     .query(`SELECT * FROM users WHERE email = $1`, [email])
     .then((result) => {
       let resolvedUser = null;
       resolvedUser = result.rows[0];
       return resolvedUser;
-       // console.log(result.rows[0]);
     })
     .catch((err) => {
-       console.log(err.message);
-    })
+      console.log(err.message);
+    });
 };
 
 /**
@@ -39,7 +38,7 @@ const getUserWithEmail = function (email) {
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithId = function (id) {
+const getUserWithId = function(id) {
   return pool
     .query(`SELECT * FROM users WHERE id = $1`, [id])
     .then((result) => {
@@ -48,7 +47,7 @@ const getUserWithId = function (id) {
     })
     .catch((err) => {
       console.log(err.message);
-    })
+    });
 };
 
 /**
@@ -56,22 +55,16 @@ const getUserWithId = function (id) {
  * @param {{name: string, password: string, email: string}} user
  * @return {Promise<{}>} A promise to the user.
  */
-const addUser = function (user) {
-  // const userId = Object.keys(users).length + 1;
-  // user.id = userId;
-  // users[userId] = user;
-
-  // console.log(user);
-  // return Promise.resolve(user);
+const addUser = function(user) {
   return pool
     .query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *;`, [user.name, user.email, user.password])
-    .then ((result) => {
+    .then((result) => {
       let newUser = result.rows[0];
       return newUser;
     })
-    .catch ((err) => {
+    .catch((err) => {
       console.log(err.message);
-    })
+    });
 
 };
 
@@ -82,8 +75,7 @@ const addUser = function (user) {
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
  */
-const getAllReservations = function (guest_id, limit = 10) {
-  // return getAllProperties(null, 2);
+const getAllReservations = function(guest_id, limit = 10) {
   return pool
     .query(
       `SELECT 
@@ -106,7 +98,7 @@ const getAllReservations = function (guest_id, limit = 10) {
     })
     .catch((err) => {
       console.log(err);
-    })
+    });
 };
 
 /// Properties
@@ -117,32 +109,29 @@ const getAllReservations = function (guest_id, limit = 10) {
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
-const getAllProperties = function (options, limit = 10) {
-  console.log(options);
+const getAllProperties = function(options, limit = 10) {
 
-  // 1
   const queryParams = [];
-  // 2
+  
   let queryString = `
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
   JOIN property_reviews ON properties.id = property_id
   `;
 
-  // 1-to-1 
+  // Handles the AND clauses for each query for WHERE
+  queryString += `WHERE 1=1`;
 
   // City Query
   if (options.city) {
     queryParams.push(`%${options.city}%`);
-    queryString += `WHERE city LIKE $${queryParams.length} `;
-  } else {
-    queryString += `WHERE 1=1`;
+    queryString += `AND city LIKE $${queryParams.length} `;
   }
 
   // Owner id Query
   if (options.owner_id) {
     queryParams.push(`${options.owner_id}`);
-    queryString += `AND owner_id = $${queryParams.length}`
+    queryString += `AND owner_id = $${queryParams.length}`;
   }
 
   //Minimum and Maximum Price per Night
@@ -166,7 +155,6 @@ const getAllProperties = function (options, limit = 10) {
   LIMIT $${queryParams.length};
   `;
   
-
   //Output the full query, and the query parameters
   console.log(queryString, queryParams);
 
@@ -179,7 +167,7 @@ const getAllProperties = function (options, limit = 10) {
     })
     .catch((err) => {
       console.log(err.message);
-    })
+    });
 };
 
 /**
@@ -187,7 +175,7 @@ const getAllProperties = function (options, limit = 10) {
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
  */
-const addProperty = function (property) {
+const addProperty = function(property) {
   const propertyId = Object.keys(properties).length + 1;
   property.id = propertyId;
   properties[propertyId] = property;
