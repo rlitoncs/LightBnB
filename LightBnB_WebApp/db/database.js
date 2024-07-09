@@ -154,18 +154,19 @@ const getAllProperties = function (options, limit = 10) {
   //Maximum Price Query
   if (options.maximum_price_per_night){
     queryParams.push(`${options.maximum_price_per_night * 100}`);
-    queryString += `AND cost_per_night <= $${queryParams.length}`;
+    queryString += `AND cost_per_night <= $${queryParams.length}\n`;
   }
 
-  // Minimum Average Rating for Properties
+  queryString += `GROUP BY properties.id\n`;
+
+  //Minimum Average Rating
   if (options.minimum_rating) {
     queryParams.push(options.minimum_rating);
-    queryString += `HAVING avg(rating) >= $${queryParams.length}`;
+    queryString += `HAVING avg(rating) >= $${queryParams.length}\n`;
   }
-
+  
   queryParams.push(limit);
   queryString += `
-  GROUP BY properties.id
   ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
