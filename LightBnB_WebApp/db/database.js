@@ -30,8 +30,7 @@ const getUserWithEmail = function (email) {
        // console.log(result.rows[0]);
     })
     .catch((err) => {
-      return err.message;
-      //  console.log(err.message);
+       console.log(err.message);
     })
 };
 
@@ -48,8 +47,7 @@ const getUserWithId = function (id) {
       return user;
     })
     .catch((err) => {
-      return err.message;
-      // console.log(err.message);
+      console.log(err.message);
     })
 };
 
@@ -72,7 +70,7 @@ const addUser = function (user) {
       return newUser;
     })
     .catch ((err) => {
-      return err.message;    
+      console.log(err.message);
     })
 
 };
@@ -104,8 +102,7 @@ const getAllProperties = (options, limit = 10) => {
       // console.log(result.rows);
     })
     .catch((err) => {
-      return err.message;
-      // console.log(err.message);
+      console.log(err.message);
     });
 };
 
