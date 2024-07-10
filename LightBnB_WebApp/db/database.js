@@ -110,7 +110,7 @@ const getAllReservations = function(guest_id, limit = 10) {
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function(options, limit = 10) {
-
+  console.log(options);
   const queryParams = [];
   
   let queryString = `
@@ -155,14 +155,13 @@ const getAllProperties = function(options, limit = 10) {
   LIMIT $${queryParams.length};
   `;
   
-  //Output the full query, and the query parameters
+  //Output the full query, and the query parameters to console
   console.log(queryString, queryParams);
 
   // Return result as a promise
   return pool
     .query(queryString, queryParams)
     .then((res) => {
-      // console.log(res.rows)
       return res.rows;
     })
     .catch((err) => {
@@ -183,13 +182,13 @@ const addProperty = function(property) {
       ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`,
       [property.owner_id, property.title, property.description, property.thumbnail_photo_url, property.cover_photo_url, property.cost_per_night, property.street, property.city, property.province, property.post_code, property.country, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms]
     )
-    .then ((result) => {
+    .then((result) => {
       console.log('Successfully inserted property');
       return result.rows[0];
     })
     .catch((err) => {
       console.log(err.message);
-    })
+    });
 };
 
 module.exports = {
