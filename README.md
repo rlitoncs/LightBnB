@@ -4,6 +4,12 @@ A simple multi-page AirBnb clone that uses a server-side JavaScript to display t
 ## Final Product
 !["LightBnB Simple Interface"](https://github.com/rlitoncs/LightBnB/blob/main/docs/Simple-LightBnB-Webpage.JPG?raw=true)
 
+## Dependencies
+- Express
+- Node
+- bcrypt
+- cookie-session
+- pg
 
 ## Set-Up
 
